@@ -1,0 +1,9 @@
+{
+  "verbose": false,
+  "ext": "ts,json",
+   "watch": "**/*.ts",
+   "execMap": {
+    "ts": "ts-node"
+  },
+  "exec": "ts-node --project /tsconfig.json /index.ts"
+}
