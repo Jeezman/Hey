@@ -118,9 +118,6 @@ app.post('/invoice/create', createInvoice, async (req: CustomRequest, res: Respo
 
 app.get('/invoice/:rHash', getInvoice)
 
-// app.post('/', (req, res) => {
-//     res.send('Got a post request');
-// });
 
 app.listen(port, () => {
     console.log(`App listening on port ${port}`)

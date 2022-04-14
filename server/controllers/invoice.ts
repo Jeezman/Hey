@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { macaroon, config, CustomRequest } from '../index';
-import request from 'request-promise';
+import request from 'request';
 
 interface InvoiceRequest {
   memo: string;
@@ -52,10 +52,22 @@ export const createInvoice = async (
 };
 
 export const getInvoice = (req: Request, res: Response, next: NextFunction) => {
+  let hash = Buffer.from(req.params.rHash, 'base64').toString('hex');
 
-  let hash = encodeURI(req.params.rHash);
+  let options = {
+    url: `${config.LN_BASE_URL}/invoice/${hash}`,
+    rejectUnauthorized: false,
+    json: true,
+    headers: {
+      'Grpc-Metadata-macaroon': macaroon,
+    },
+  };
 
-  console.log('encoded hash ', hash)
-  console.log(req.params.rHash)
- 
+  request.get(options, function (error, response, body) {
+    try {
+      res.status(200).json(body)
+    } catch (err) {
+      console.log('getInvoice error ', error);
+    }
+  });
 };
