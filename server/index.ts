@@ -1,21 +1,24 @@
-import express, {Express, Request, Response} from 'express';
+import express, {Express, Request, Response, NextFunction} from 'express';
 import fs from 'fs';
-import request from 'request';
+import request from 'request-promise';
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 import createLnRpc, { LnRpc } from '@radar/lnrpc';
 import cors from 'cors';
+import bodyParser from 'body-parser';
+import { createInvoice, getInvoice } from './controllers/invoice';
 
-const config = {
+export const config = {
     LN_BASE_URL: 'https://localhost:8080/v1'
 }
 
 export interface CustomRequest extends Request {
   ln_address?: string;
+  invoice?: any;
 }
 
 /** TO DO: move to env file */
-const macaroon = fs.readFileSync('/Users/bigtobz/.lnd1/data/chain/bitcoin/regtest/admin.macaroon').toString('hex');
+export const macaroon = fs.readFileSync('/Users/bigtobz/.lnd1/data/chain/bitcoin/regtest/admin.macaroon').toString('hex');
 const lndCert = fs.readFileSync('/Users/bigtobz/.lnd1/tls.cert').toString('hex');
 
 // async function connect(): Promise<any> {
@@ -52,6 +55,8 @@ let requestBody = {
 
 const app: Express = express();
 app.use(cors({ origin: '*' }));
+app.use(bodyParser.json({ limit: '25mb' }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const port = 3000;
 
@@ -97,6 +102,21 @@ app.get('/create-address', generateLNAddress,  async (req: CustomRequest, res: R
    }
 
 })
+
+app.post('/invoice/create', createInvoice, async (req: CustomRequest, res: Response, next) => {
+    try {
+        let invoice = req.invoice;
+        console.log('create-invoice ', invoice);
+        res.json({
+            invoice
+        })
+    } catch (error) {
+        console.log('error is ', error)
+        next(error)
+    }
+})
+
+app.get('/invoice/:rHash', getInvoice)
 
 // app.post('/', (req, res) => {
 //     res.send('Got a post request');
