@@ -11,44 +11,76 @@ import { useState, useContext, useEffect } from 'react';
 import { LNContext } from '../context/LNContext';
 import { PhotoIcon, PadlockIcon } from '../assets/images/icons';
 
-export function ProductScreen({}) {
+const PRODUCTS = [
+  {
+    description: 'La nueva era digital',
+    img_url:
+      'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.dondeir.com%2Fwp-content%2Fuploads%2F2021%2F04%2Fnfts.jpg&f=1&nofb=1',
+    amount: '400',
+  },
+  {
+    description: 'Attracts',
+    img_url:
+      'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpbs.twimg.com%2Fmedia%2FD2ZP-iOX4AEbzRv.jpg&f=1&nofb=1',
+    amount: '550',
+  },
+  {
+    description: 'Valkryie',
+    img_url:
+      'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmir-s3-cdn-cf.behance.net%2Fproject_modules%2F1400%2Ffcb16210761223.5eaa3b5017966.jpg&f=1&nofb=1',
+    amount: '1,000',
+  },
+  {
+    description: 'In Paradise',
+    img_url:
+      'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.showmetech.com.br%2Fwp-content%2Fuploads%2F2021%2F03%2Fgrimes-nft-1614741018-1024x576.jpeg&f=1&nofb=1',
+    amount: '2,000',
+  },
+];
+
+export function ProductScreen({ navigation }) {
   const { createPaymentRequest } = useContext(LNContext);
+
+  const handleShowModal = () => {
+    navigation.navigate('Modal');
+  };
 
   return (
     <Container>
-        <Text
-          style={{
-            marginTop: 26,
-            marginBottom: 20,
-            color: '#2E3B4E',
-            fontSize: 24,
-            opacity: 0.9,
-          }}
-        >
-          Art Collections
-        </Text>
+      <Text
+        style={{
+          marginTop: 26,
+          marginBottom: 20,
+          color: '#2E3B4E',
+          fontSize: 24,
+          opacity: 0.9,
+        }}
+      >
+        Art Collections
+      </Text>
       <ScrollView>
-        
-
         <ProductWrap>
-          <Product />
-          <Product />
-          <Product />
-          <Product />
+          {PRODUCTS.map((value, index) => (
+            <Product
+              key={index}
+              uri={value.img_url}
+              description={value.description}
+              amount={value.amount}
+              onPress={handleShowModal}
+            />
+          ))}
         </ProductWrap>
       </ScrollView>
     </Container>
   );
 }
 
-const Product = () => {
-  let uri =
-    'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.dondeir.com%2Fwp-content%2Fuploads%2F2021%2F04%2Fnfts.jpg&f=1&nofb=1';
+const Product = ({ uri, amount, description, onPress }) => {
   return (
-      <ProductCard>
-          <ProductCardMask>
-              <PadlockIcon color="#ddd" />
-          </ProductCardMask>
+    <ProductCard>
+      <ProductCardMask>
+        <PadlockIcon color="#ddd" />
+      </ProductCardMask>
       <Image
         source={{
           uri: uri,
@@ -58,14 +90,14 @@ const Product = () => {
       <DescWrap>
         <DescContent>
           <DescContentLabel>Desc.</DescContentLabel>
-          <DescContentTitle>La nueva era digital</DescContentTitle>
+          <DescContentTitle>{description}</DescContentTitle>
         </DescContent>
         <DescContent>
           <DescContentLabel>Amount</DescContentLabel>
-          <DescContentTitle>4,000 Sats</DescContentTitle>
+          <DescContentTitle>{amount} Sats</DescContentTitle>
         </DescContent>
       </DescWrap>
-      <PurchaseButton>
+      <PurchaseButton onPress={onPress}>
         {/* <PhotoIcon /> */}
         <PurchaseButtonText>CLAIM</PurchaseButtonText>
       </PurchaseButton>
@@ -101,8 +133,6 @@ const DescContentTitle = styled.Text`
 const ProductCard = styled.View`
   border: 1px solid #dedede;
   border-radius: 5px;
-  overflow: hidden;
-  position: relative;
   padding: 5px;
   width: 49%;
   margin-bottom: 15px;
@@ -114,7 +144,6 @@ const ProductCardMask = styled.View`
   position: absolute;
   left: 0;
   right: 0;
-  width: 104%;
   height: 205px;
   opacity: 0.85;
   z-index: 100;
@@ -153,24 +182,4 @@ const ProductWrap = styled.View`
   flex-wrap: wrap;
   justify-content: space-between;
   padding: 5px;
-`;
-
-const Button = styled.TouchableOpacity`
-  height: 53px;
-  width: 70%;
-  margin-top: 10px;
-  justify-content: center;
-  align-items: center;
-  border-radius: 40px;
-  border: 1px solid #000;
-  ${(props) => !props.disabled && `box-shadow: 0px 3px 0px rgba(0,0,0,0.2);`}
-`;
-
-const ButtonText = styled.Text`
-  color: #000;
-  font-size: 14px;
-`;
-
-const styledText = styled.Text`
-  color: red;
 `;
