@@ -25,3 +25,34 @@ export const PadlockIcon = (props: SvgProps) => (
     />
   </Svg>
 )
+
+
+export const CopyIcon = (props: SvgProps) => (
+  <Svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    {...props}
+  >
+    <Rect width={10} height={14} x={6} y={6} rx={1.5} />
+    <Path d="M8.064 5.064A1.5 1.5 0 0 1 8.5 5h7A1.5 1.5 0 0 1 17 6.5v11a1.5 1.5 0 0 1-.064.436A1.5 1.5 0 0 0 18 16.5v-11A1.5 1.5 0 0 0 16.5 4h-7a1.5 1.5 0 0 0-1.436 1.064z" />
+  </Svg>
+)
+
+export const XIcon = (props: SvgProps) => (
+  <Svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    {...props}
+  >
+    <Path
+      fillRule="evenodd"
+      d="M5.47 5.47a.75.75 0 0 1 1.06 0l12 12a.75.75 0 1 1-1.06 1.06l-12-12a.75.75 0 0 1 0-1.06z"
+      clipRule="evenodd"
+    />
+    <Path
+      fillRule="evenodd"
+      d="M18.53 5.47a.75.75 0 0 1 0 1.06l-12 12a.75.75 0 0 1-1.06-1.06l12-12a.75.75 0 0 1 1.06 0z"
+      clipRule="evenodd"
+    />
+  </Svg>
+)

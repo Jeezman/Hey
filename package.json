@@ -37,7 +37,8 @@
     "react-native-svg": "12.1.1",
     "react-native-web": "0.17.1",
     "react-qr-code": "^2.0.5",
-    "styled-components": "^5.3.5"
+    "styled-components": "^5.3.5",
+    "expo-clipboard": "~2.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
