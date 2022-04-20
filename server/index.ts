@@ -9,11 +9,15 @@ import { loggerMiddleware } from './middleware/logger';
 import { getInfo } from './controllers/info';
 import NodeManager, { NodeEvents } from './node-mgt';
 import { getAllCollections, createCollection, updateCollectionById, addInvoiceToCollection } from './controllers/collection';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export const config = {
-  LN_BASE_URL: 'https://localhost:8080/v1',
-  LN_BASE_URL_V2: 'https://localhost:8080/v2',
-  WSS_URL: 'localhost:8080/v2/',
+  LN_BASE_URL: process.env.LN_BASE_URL,
+  LN_BASE_URL_V2: process.env.LN_BASE_URL_V2,
+  WSS_URL: process.env.WSS_URL,
+  PORT: process.env.PORT
 };
 
 const { app } = expressWs(express());
@@ -22,7 +26,6 @@ app.use(bodyParser.json({ limit: '25mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(loggerMiddleware);
 
-const port = 3000;
 
 export interface CustomRequest extends Request {
   ln_address?: string;
@@ -229,6 +232,6 @@ app.put('/collection/add-invoice/:collection_id', createInvoice, addInvoiceToCol
 // app.on('connection', (ws: Record, req: Request) => {
 // })
 
-app.listen(port, () => {
-  console.log(`App listening on port ${port}`);
+app.listen(config.PORT, () => {
+  console.log(`App listening on port ${config.PORT}`);
 });
