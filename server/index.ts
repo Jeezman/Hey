@@ -8,7 +8,7 @@ import { createInvoice, getInvoice } from './controllers/invoice';
 import { loggerMiddleware } from './middleware/logger';
 import { getInfo } from './controllers/info';
 import NodeManager, { NodeEvents } from './node-mgt';
-import { getAllCollections, createCollection, updateCollectionById } from './controllers/collection';
+import { getAllCollections, createCollection, updateCollectionById, addInvoiceToCollection } from './controllers/collection';
 
 export const config = {
   LN_BASE_URL: 'https://localhost:8080/v1',
@@ -173,8 +173,61 @@ app.get('/get-info', async (req: Request, res: Response) => {
 app.get('/collection', getAllCollections)
 app.post('/collection', createCollection)
 app.put('/collection/:collection_id', updateCollectionById)
+app.put('/collection/add-invoice/:collection_id', createInvoice, addInvoiceToCollection)
 
+// Configure Websocket
 
+// app.ws('/events', ws => {
+//     console.log('call /events @@@@@@@@@@@@@@@@@@@@@@@@@@@')
+
+//     // when a websocket connection is made, add listeners for posts and invoices
+//     const paymentsListener = (info: any) => {
+//         console.log('call paymentsListener @@@@@@@@@@@@@@@@@@@@@@@@@@@')
+//         const event = {type: SocketEvents.invoicePaid, data: info};
+//         console.log('paymentsListener event is >>>> ', event)
+//         ws.send(JSON.stringify(event))
+//     }
+
+//     NodeManager.on(NodeEvents.invoicePaid, paymentsListener)
+
+//     ws.on('close', () => {
+//         console.log('closing connection')
+//         NodeManager.off(NodeEvents.invoicePaid, paymentsListener)
+//     })
+// })
+// app.ws('/events/', (ws, req) => {
+//     console.log('call /events @@@@@@@@@@@@@@@@@@@@@@@@@@@')
+
+//     ws.on('connection', () => {
+//         console.log('ws connection made')
+//     })
+
+//     // when a websocket connection is made, add listeners for posts and invoices
+//     const paymentsListener = (info: any) => {
+//         console.log('call paymentsListener @@@@@@@@@@@@@@@@@@@@@@@@@@@')
+//         const event = {type: SocketEvents.invoicePaid, data: info};
+//         console.log('paymentsListener event is >>>> ', event)
+//         ws.send(JSON.stringify(event))
+//     }
+
+//     let hash = (url.parse(req.url,true).query).hash;
+//     console.log('hash is ************* ', hash)
+//     if (hash) {
+//         NodeManager.listenForPayments(hash)
+//     }
+//     // var id64 = Buffer.from(id, 'hex').toString("base64");
+//     // console.log('request is ', req)
+
+//     NodeManager.on(NodeEvents.invoicePaid, paymentsListener)
+
+//     ws.on('close', () => {
+//         console.log('closing connection')
+//         NodeManager.off(NodeEvents.invoicePaid, paymentsListener)
+//     })
+// })
+
+// app.on('connection', (ws: Record, req: Request) => {
+// })
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);

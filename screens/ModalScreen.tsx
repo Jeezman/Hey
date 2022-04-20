@@ -1,8 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { Platform, StyleSheet } from 'react-native';
 import styled from 'styled-components/native';
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
 import { LNContext } from '../context/LNContext';
 import QRCode from 'react-qr-code';
 import { useCallback, useContext, useEffect, useState } from 'react';
@@ -11,8 +9,8 @@ import { CopyIcon, XIcon } from '../assets/images/icons';
 import * as Clipboard from 'expo-clipboard';
 import { useFocusEffect } from '@react-navigation/native';
 
-export default function ModalScreen({navigation}) {
-  const { paymentRequest } = useContext(LNContext);
+export default function ModalScreen({ navigation }) {
+  const { paymentRequest, setPaymentRequest } = useContext(LNContext);
   const [isCopy, setIsCopy] = useState(false);
 
   let req =
@@ -28,8 +26,9 @@ export default function ModalScreen({navigation}) {
   };
 
   const onCloseModal = () => {
-    navigation.goBack()
-  }
+    setPaymentRequest(null);
+    navigation.goBack();
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -41,15 +40,15 @@ export default function ModalScreen({navigation}) {
     }, [])
   );
 
-
   return (
     <Container>
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'light'} />
-
-      <QRCodeWrap>
-        <QRCode value={req} />
-        <QRPayReqText>{ellipsisSandwich(req, 10)}</QRPayReqText>
-      </QRCodeWrap>
+      {!!paymentRequest && (
+        <QRCodeWrap>
+          <QRCode value={paymentRequest} />
+          <QRPayReqText>{ellipsisSandwich(paymentRequest, 10)}</QRPayReqText>
+        </QRCodeWrap>
+      )}
       <ButtonWrap>
         <PurchaseButton onPress={onCloseModal} style={{ marginRight: 15 }}>
           <XIcon width={24} height={24} color="#000" />

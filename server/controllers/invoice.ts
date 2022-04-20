@@ -8,6 +8,7 @@ interface InvoiceRequest {
   expiry?: string;
   value_msat?: number;
   value?: string;
+  collection_id?: string;
 }
 
 export const createInvoice = async (
@@ -18,9 +19,10 @@ export const createInvoice = async (
   try {
 
    
-    console.log('create invoice request is ', req.body);
+    // console.log('create invoice request is ', req.body);
+    // console.log('create invoice request params is ', req.params);
     const requestBody: InvoiceRequest = {
-      memo: req.body.memo,
+      memo: req.body.description,
       private: JSON.parse(req.body.private),
       expiry: req.body.expiry,
     };
@@ -30,6 +32,7 @@ export const createInvoice = async (
     } else {
       requestBody.value = req.body.amount;
     }
+
 /**
      * REST IMPLEMENTATION
     let options = {
@@ -54,8 +57,11 @@ export const createInvoice = async (
 
    const response = await rpc.addInvoice(requestBody);
 
-   console.log('creating invoice rpc ', {response})
-   req.invoice = response;
+  //  console.log('creating invoice rpc ', {response})
+    req.invoice = response;
+    if (req.params.collection_id) {
+      req.invoice.collection_id = req.params.collection_id;
+    }
    next();
 
   } catch (error) {

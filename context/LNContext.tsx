@@ -6,6 +6,7 @@ import {
   getAllCollections,
   getEventsSocket,
   getInvoice,
+  addInvoiceToCollection
 } from '../api';
 import { getData, storeData } from '../utils/storage';
 
@@ -23,8 +24,7 @@ export const LNContext = React.createContext(undefined);
 export const LNContextProvider = ({ children }: Props) => {
   const [pubKey, setPubkey] = useState('');
   const [showPayModal, setShowPayModal] = useState('');
-  const [paymentAmount, setPaymentAmount] = useState('');
-  const [paymentRequest, setPaymentRequest] = useState('');
+  const [paymentRequest, setPaymentRequest] = useState(null);
   const [paymentHash, setPaymentHash] = useState('');
   const [invoiceCreated, setInvoiceCreated] = useState('');
   const [invoiceSettled, setInvoiceSettled] = useState(false);
@@ -130,11 +130,29 @@ export const LNContextProvider = ({ children }: Props) => {
     }
   }
 
+  const handleAddInvoiceToCollection = async (collection) => {
+    try {
+      const response = await addInvoiceToCollection(collection);
+      let invoiceData = response.data;
+        setInvoiceCreated(invoiceData.creationDate);
+        setInvoiceSettled(invoiceData.settled || false);
+        setInvoiceMemo(invoiceData.memo);
+        setInvoiceValue(invoiceData.value);
+        setPaymentRequest(invoiceData.paymentRequest);
+    } catch (error) {
+      console.log('handleAddInvoiceToCollection ', error)
+    }
+  }
+
   const contextValue = {
     createPaymentRequest,
     paymentRequest,
+    setPaymentRequest,
     handleGetCollections,
-    collections
+    collections,
+    handleAddInvoiceToCollection,
+    invoiceSettled,
+    invoiceValue,
   };
 
   return (

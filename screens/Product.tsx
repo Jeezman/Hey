@@ -37,10 +37,11 @@ const PRODUCTS = [
 ];
 
 export function ProductScreen({ navigation }) {
-  const { createPaymentRequest, collections, handleGetCollections } = useContext(LNContext);
+  const { createPaymentRequest, collections, handleGetCollections,handleAddInvoiceToCollection } = useContext(LNContext);
 
-  const handleShowModal = () => {
+  const handleShowModal = (collection) => {
     navigation.navigate('Modal');
+    handleAddInvoiceToCollection(collection)
   };
 
   return (
@@ -58,13 +59,13 @@ export function ProductScreen({ navigation }) {
       </Text>
       <ScrollView>
         <ProductWrap>
-          {collections.map((value, index) => (
+          {collections.map((collection, index) => (
             <Product
-              key={index}
-              uri={value.img_url}
-              description={value.description}
-              amount={value.amount}
-              onPress={handleShowModal}
+              key={collection.collection_id}
+              uri={collection.img_url}
+              description={collection.description}
+              amount={collection.amount}
+              onPress={() => handleShowModal(collection)}
             />
           ))}
         </ProductWrap>
