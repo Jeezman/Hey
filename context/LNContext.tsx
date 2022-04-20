@@ -3,6 +3,7 @@ import {
   connect,
   createAddress,
   createInvoice,
+  getAllCollections,
   getEventsSocket,
   getInvoice,
 } from '../api';
@@ -32,6 +33,7 @@ export const LNContextProvider = ({ children }: Props) => {
   const [paymentSuccessMsg, setPaymentSuccessMsg] = useState('');
   const [paymentErrorMsg, setPaymentErrorMsg] = useState('');
   const [error, SetError] = useState('');
+  const [collections, setCollections] = useState([])
 
   useEffect(() => {
     let init = async () => {
@@ -40,6 +42,7 @@ export const LNContextProvider = ({ children }: Props) => {
       // connect to websocket and listen for events
       const ws = getEventsSocket();
       ws.addEventListener('message', onSocketMessage);
+      handleGetCollections()
     };
     init();
   }, []);
@@ -113,9 +116,25 @@ export const LNContextProvider = ({ children }: Props) => {
     }
   };
 
+  const handleGetCollections = async () => {
+    try {
+      const response = await getAllCollections()
+      console.log(
+        '<<<<<<<<< handleGetCollections response is >>>>>>>>>> ',
+        response.data.collection
+      );
+      setCollections(response.data.collection)
+    } catch (error) {
+      console.log('calling handleGetCollections error ', error);
+      return { error };
+    }
+  }
+
   const contextValue = {
     createPaymentRequest,
     paymentRequest,
+    handleGetCollections,
+    collections
   };
 
   return (

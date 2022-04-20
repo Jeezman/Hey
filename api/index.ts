@@ -108,3 +108,19 @@ export const subscribeToInvoice = async (invoiceHash): Promise<any> => {
   }
    */
 };
+
+export const getAllCollections = async (): Promise<any> => {
+  try {
+    const collections = await axios.get<Data>(`collection`)
+    return collections
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const serverError = error as AxiosError<ServerError>;
+      if (serverError && serverError.response) {
+        return serverError.response.data;
+      }
+    }
+    console.log('getAllCollections error ', error);
+    return { error };
+  }
+}

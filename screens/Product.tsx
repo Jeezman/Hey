@@ -1,15 +1,13 @@
 import styled from 'styled-components/native';
 import {
   Text,
-  TouchableOpacity,
   ScrollView,
-  Platform,
-  View,
   Image,
 } from 'react-native';
 import { useState, useContext, useEffect } from 'react';
 import { LNContext } from '../context/LNContext';
-import { PhotoIcon, PadlockIcon } from '../assets/images/icons';
+import { PadlockIcon } from '../assets/images/icons';
+import { commaify } from '../utils/formatters';
 
 const PRODUCTS = [
   {
@@ -39,7 +37,7 @@ const PRODUCTS = [
 ];
 
 export function ProductScreen({ navigation }) {
-  const { createPaymentRequest } = useContext(LNContext);
+  const { createPaymentRequest, collections, handleGetCollections } = useContext(LNContext);
 
   const handleShowModal = () => {
     navigation.navigate('Modal');
@@ -60,7 +58,7 @@ export function ProductScreen({ navigation }) {
       </Text>
       <ScrollView>
         <ProductWrap>
-          {PRODUCTS.map((value, index) => (
+          {collections.map((value, index) => (
             <Product
               key={index}
               uri={value.img_url}
@@ -94,11 +92,10 @@ const Product = ({ uri, amount, description, onPress }) => {
         </DescContent>
         <DescContent>
           <DescContentLabel>Amount</DescContentLabel>
-          <DescContentTitle>{amount} Sats</DescContentTitle>
+          <DescContentTitle>{commaify(amount)} Sats</DescContentTitle>
         </DescContent>
       </DescWrap>
       <PurchaseButton onPress={onPress}>
-        {/* <PhotoIcon /> */}
         <PurchaseButtonText>CLAIM</PurchaseButtonText>
       </PurchaseButton>
     </ProductCard>
