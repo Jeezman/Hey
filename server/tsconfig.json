@@ -6,7 +6,7 @@
             "es2017"
         ],
         "outDir": "build",
-        "strict": true,
+        "strict": false,
         "baseUrl": ".",
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
@@ -20,6 +20,6 @@
         "node_modules"
     ],
     "files": [
-        "types.d.ts"
+        "types.ts"
     ]
 }

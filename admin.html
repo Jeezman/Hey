@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Paywall Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+        // const baseURL = 'http://192.168.0.157:3000/'
+        const baseURL = 'http://127.0.0.1:3000'
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="js/qrcode.min.js"></script>
+
+    <style>
+      .container {
+        border: 1px solid red;
+        height: 100vh;
+        width: 100vw;
+      }
+      .product_wrap {
+          display: flex;
+          flex-direction: column;
+          width: 20%;
+      }
+
+      input {
+          margin-bottom: 15px;
+          padding: 15px;
+      }
+
+      button {
+          padding: 15px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="container">
+      <h1>Hey Admin</h1>
+
+      <h2>Add Product</h2>
+      <aside class="product_wrap">
+        <input id="desc" placeholder="Payment description" />
+        <input id="img" placeholder="Image URI" />
+        <input id="amount" placeholder="Amount" />
+        <button onclick="createProduct()">Add Product</button>
+      </aside>
+    </main>
+
+    <script>
+        function createProduct() {
+            let desc = $("#desc").val();
+            let amount = $("#amount").val();
+            let img = $("#img").val();
+
+            let requestBody = {
+                description: desc,
+                amount: amount,
+                img_url: img
+            };
+
+            console.log('creating product requestbody ', requestBody)
+
+            jQuery.ajax({
+                type: "POST",
+                // url: `${baseURL}/add-product`,
+                url: `${baseURL}/collection`,
+                data: requestBody,
+                dataType: 'json'
+            }).done(function(data) {
+                console.log('returned data ', data)
+                $("input").val("")
+            })
+        }
+    </script>
+  </body>
+</html>
