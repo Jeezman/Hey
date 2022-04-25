@@ -1,14 +1,10 @@
-import express, { Express, Request, Response, NextFunction } from 'express';
-import { request } from 'http';
-import { NodeEvents } from '../node-mgt';
-import { EventEmitter } from 'stream';
+import { Request, Response, NextFunction } from 'express';
 import connection from '../connect';
-import { CustomRequest, LNDRPC } from '../index';
+import { CustomRequest, LNDRPC, emitSocketEvent } from '../index';
 
 const sql_createCollection = `INSERT INTO collection(amount, img_url, description) VALUES(?)`;
 
 const createCollection = (req: Request, res: Response, next: NextFunction) => {
-  // console.log(req.body);
   if (!req.body.amount) {
     res.status(500).json({
       status: 'failure',
@@ -95,12 +91,6 @@ const addInvoiceToCollection = async (
   res: Response,
   next: NextFunction
 ) => {
-  // console.log('addInvoiceToCollection start req ', req.invoice);
-  // console.log(
-  //   'addInvoiceToCollection start collection_id ',
-  //   req.params.collection_id
-  // );
-
   let hash = Buffer.from(req.invoice.rHash, 'base64').toString('hex');
   const rpc = await LNDRPC();
   const response = await rpc.lookupInvoice({
@@ -113,9 +103,6 @@ const addInvoiceToCollection = async (
 
   response.rHash = rhash;
   response.rPreimage = preImg
-  // res.status(200).json(response)
-
-  // console.log(' addInvoiceToCollection is response ', response)
 
   try {
     let invoice = response;
@@ -135,32 +122,48 @@ const addInvoiceToCollection = async (
       if (error) {
         throw new Error(error.message)
       }
-      console.log('update collection based on invoice success ', {results})
-      console.log('update collection based on invoice success ', {fields})
+      console.log('update collection on invoice success ', {results})
     })
   } catch (error) {}
 
   
   res.status(200).json(response)
 
-  // const call = await rpc.subscribeInvoices({
-  //   addIndex: `${req.invoice.addIndex}`
-  // })
 
-  // call.on('data', function (response) {
-  //   console.log('event call data ', response)
-  // })
+  const call = await rpc.subscribeInvoices({
+    addIndex: `${req.invoice.addIndex}`
+  })
 
-  // let _ev = new EventEmitter()
-  // _ev.emit(NodeEvents.invoicePaid)
+  call.on('data', function (response) {
+    console.log('event call data ', response)
 
-  // call.on('status', function (status) {
-  //   console.log('on call status ', status)
-  // })
+    if (response.settled) {
 
-
-  
+      updateCollectionOnInvoiceSettled(req.invoice.collection_id, response);
+      emitSocketEvent.emit('invoice-paid', response.settled)
+    }
+  })
 };
+
+const updateCollectionOnInvoiceSettled = (collection_id, fields) => {
+  console.log('updateCollectionOnInvoiceSettled ', {collection_id})
+  try {
+    let collectionField = {
+      invoice_settled: fields.settled || false,
+    };
+    let collectionID = {
+      collection_id: collection_id
+    }
+    connection.query(sql_updateCollectionById, [collectionField, collectionID], (error, results, fields) => {
+      if (error) {
+        throw new Error(error.message)
+      }
+    })
+  } catch (error) {
+    console.log('updateCollectionOnInvoiceSettled error ', error)
+  }
+
+}
 
 export {
   createCollection,
