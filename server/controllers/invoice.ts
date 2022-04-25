@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { macaroon, config, CustomRequest, LNDRPC } from '../index';
-import request from 'request';
+import { CustomRequest, LNDRPC } from '../index';
 
 interface InvoiceRequest {
   memo?: string;
@@ -17,10 +16,6 @@ export const createInvoice = async (
   next: NextFunction
 ) => {
   try {
-
-   
-    // console.log('create invoice request is ', req.body);
-    // console.log('create invoice request params is ', req.params);
     const requestBody: InvoiceRequest = {
       memo: req.body.description,
       private: JSON.parse(req.body.private),
@@ -99,28 +94,4 @@ export const getInvoice = async (req: Request, res: Response, next: NextFunction
   call.on('status', function(status) {
     console.log('status of stream ', status)
   })
-
-  
-
-  /**
-   * 
-  let options = {
-    url: `${config.LN_BASE_URL}/invoice/${hash}`,
-    rejectUnauthorized: false,
-    json: true,
-    headers: {
-      'Grpc-Metadata-macaroon': macaroon,
-    },
-  };
-
-  request.get(options, function (error, response, body) {
-    try {
-      res.status(200).json(body)
-    } catch (err) {
-      console.log('getInvoice error ', error);
-    }
-  });
-  */
 };
-
-// export const subscribeToInvoice = ()
