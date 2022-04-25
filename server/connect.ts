@@ -1,4 +1,7 @@
 import mysql from 'mysql'
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 let connection = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -52,58 +55,3 @@ connection.query(createCollection, function (err, results, fields) {
     }
     console.log('Collection table created')
 })
-
-// let sql = `INSERT INTO user(username) VALUES('jeezman')`
-
-// connection.query(sql, function (err, results, fields) {
-//     if (err) { console.log(err.message) }
-//     console.log("user inserted")
-// })
-
-// let stmt = `INSERT INTO user(username)
-//             VALUES(?)`;
-// let todo = ['Sarah'];
-
-// connection.query(stmt, todo, (err, results, fields) => {
-//     if (err) {
-//         return console.error(err.message);
-//     }
-//     // get inserted id
-//     console.log('Todo Id:' + results.insertId);
-// });
-
-// let sql = `INSERT INTO collection(amount, img_url, description) VALUES(?,?,?)`;
-// let collection = ['400', 'image url from google', 'In paradise'];
-// connection.query(sql, collection, (err, results, fields) => {
-//     if (err) {
-//         return console.error(err.message);
-//     }
-//     // get inserted id
-//     console.log('collection Id:' + results.insertId);
-// });
-
-// connection.end(function (err) {
-//     if (err) {
-//         return console.log('error:' + err.message);
-//     }
-//     console.log('Close the database connection.');
-// });
-
-
-// insert multiple rows
-/**
-let stmt = `INSERT INTO todos(title,completed)  VALUES ?  `;
-let todos = [
-    ['Insert multiple rows at a time', false],
-    ['It should work perfectly', true]
-];
-
-// execute the insert statment
-connection.query(stmt, [todos], (err, results, fields) => {
-    if (err) {
-        return console.error(err.message);
-    }
-    // get inserted rows
-    console.log('Row inserted:' + results.affectedRows);
-});
- */
