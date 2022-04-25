@@ -1,39 +1,42 @@
 import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform } from 'react-native';
 import styled from 'styled-components/native';
 import { LNContext } from '../context/LNContext';
 import QRCode from 'react-qr-code';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { commaify, ellipsisSandwich } from '../utils/formatters';
-import { CopyIcon, XIcon } from '../assets/images/icons';
+import { CopyIcon, XIcon, CheckIcon } from '../assets/images/icons';
 import * as Clipboard from 'expo-clipboard';
 import { useFocusEffect } from '@react-navigation/native';
+import { RootStackScreenProps } from '../types';
 
-export default function ModalScreen({ navigation }) {
-  const { paymentRequest, setPaymentRequest } = useContext(LNContext);
+
+export default function ModalScreen({ navigation }: RootStackScreenProps<'Modal'>) {
+  const {
+    paymentRequest,
+    setPaymentRequest,
+    invoiceSettled,
+    setInvoiceSettled
+  } = useContext(LNContext);
   const [isCopy, setIsCopy] = useState(false);
 
-  let req =
-    'lntb100n1p39urc5pp5tu3glvfcfnwqr78hmjcw77qv8hmxjz6v3jajkas3nvwffahfa2jsdp6dp68gurn8ghj7mt9v46zuem0dankcefwvdhk6tmxd96z67nzw93j6erjwvcqzpgxqrrsssp5394vplcef4dz2eqld97654wmn0wdr6sx2v4048dyyq3p9dwp59ms9qyyssqafyx4nrpmzjnnvh7lsrnn0khgxac7e028x8c5m4vep8vdu62lfahy9jhe550ndljtgck85tfkn6pd3lq9570frfrkad3x5aq8w9atcgpwejsn2';
-
   const copyToClipboard = async () => {
-    Clipboard.setString(req);
+    Clipboard.setString(paymentRequest);
 
     const text = await Clipboard.getStringAsync();
-    if (text === req) {
+    if (text === paymentRequest) {
       setIsCopy(true);
     }
   };
 
   const onCloseModal = () => {
     setPaymentRequest(null);
+    setInvoiceSettled(false);
     navigation.goBack();
   };
 
   useFocusEffect(
     useCallback(() => {
-      // Do something when the screen is focused
-
       return () => {
         setIsCopy(false);
       };
@@ -43,29 +46,70 @@ export default function ModalScreen({ navigation }) {
   return (
     <Container>
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'light'} />
-      {!!paymentRequest && (
-        <QRCodeWrap>
-          <QRCode value={paymentRequest} />
-          <QRPayReqText>{ellipsisSandwich(paymentRequest, 10)}</QRPayReqText>
-        </QRCodeWrap>
+      {invoiceSettled ? (
+        <PaySuccess />
+      ) : (
+        <>
+          {!!paymentRequest && (
+            <QRCodeWrap>
+              <QRCode value={paymentRequest} />
+              <QRPayReqText>
+                {ellipsisSandwich(paymentRequest, 10)}
+              </QRPayReqText>
+            </QRCodeWrap>
+          )}
+        </>
       )}
-      <ButtonWrap>
-        <PurchaseButton onPress={onCloseModal} style={{ marginRight: 15 }}>
-          <XIcon width={24} height={24} color="#000" />
-          <PurchaseButtonText style={{ marginLeft: 5 }}>
-            CANCEL
-          </PurchaseButtonText>
-        </PurchaseButton>
-        <PurchaseButton onPress={copyToClipboard}>
-          <CopyIcon width={24} height={24} color="#000" />
-          <PurchaseButtonText style={{ marginLeft: 5 }}>
-            {isCopy ? 'COPIED' : 'COPY'}
-          </PurchaseButtonText>
-        </PurchaseButton>
-      </ButtonWrap>
+
+      {!invoiceSettled ? (
+        <ButtonWrap>
+          <PurchaseButton onPress={onCloseModal} style={{ marginRight: 15 }}>
+            <XIcon width={24} height={24} color="#000" />
+            <PurchaseButtonText style={{ marginLeft: 5 }}>
+              CANCEL
+            </PurchaseButtonText>
+          </PurchaseButton>
+          <PurchaseButton onPress={copyToClipboard}>
+            <CopyIcon width={24} height={24} color="#000" />
+            <PurchaseButtonText style={{ marginLeft: 5 }}>
+              {isCopy ? 'COPIED' : 'COPY'}
+            </PurchaseButtonText>
+          </PurchaseButton>
+        </ButtonWrap>
+      ) : (
+        <ButtonWrap>
+          <PurchaseButton onPress={onCloseModal} style={{ marginRight: 15 }}>
+            <PurchaseButtonText style={{ marginLeft: 5 }}>
+              GO BACK
+            </PurchaseButtonText>
+          </PurchaseButton>
+        </ButtonWrap>
+      )}
     </Container>
   );
 }
+
+const PaySuccess = () => {
+  return (
+    <PaySuccessView>
+      <CheckIcon color="#fff" />
+      <QRPayReqText style={{color: "#fff", marginBottom: 35, fontSize: 20, fontWeight: 'bold'}}>
+              Payment Successfull!!
+        </QRPayReqText>
+    </PaySuccessView>
+  );
+};
+
+const PaySuccessView = styled.View`
+  background: #81de99;
+  padding: 15px;
+  height: 42%;
+  width: 68%;
+  border-radius: 15px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 25px;
+`;
 
 const ButtonWrap = styled.View`
   width: 100%;
