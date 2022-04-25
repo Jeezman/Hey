@@ -1,47 +1,42 @@
 import styled from 'styled-components/native';
-import {
-  Text,
-  ScrollView,
-  Image,
-} from 'react-native';
-import { useState, useContext, useEffect } from 'react';
+import { Text, ScrollView, Image } from 'react-native';
+import {  useContext } from 'react';
 import { LNContext } from '../context/LNContext';
 import { PadlockIcon } from '../assets/images/icons';
 import { commaify } from '../utils/formatters';
+import { RootStackScreenProps } from '../types';
 
-const PRODUCTS = [
-  {
-    description: 'La nueva era digital',
-    img_url:
-      'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.dondeir.com%2Fwp-content%2Fuploads%2F2021%2F04%2Fnfts.jpg&f=1&nofb=1',
-    amount: '400',
-  },
-  {
-    description: 'Attracts',
-    img_url:
-      'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpbs.twimg.com%2Fmedia%2FD2ZP-iOX4AEbzRv.jpg&f=1&nofb=1',
-    amount: '550',
-  },
-  {
-    description: 'Valkryie',
-    img_url:
-      'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmir-s3-cdn-cf.behance.net%2Fproject_modules%2F1400%2Ffcb16210761223.5eaa3b5017966.jpg&f=1&nofb=1',
-    amount: '1,000',
-  },
-  {
-    description: 'In Paradise',
-    img_url:
-      'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.showmetech.com.br%2Fwp-content%2Fuploads%2F2021%2F03%2Fgrimes-nft-1614741018-1024x576.jpeg&f=1&nofb=1',
-    amount: '2,000',
-  },
-];
-
-export function ProductScreen({ navigation }) {
-  const { createPaymentRequest, collections, handleGetCollections,handleAddInvoiceToCollection } = useContext(LNContext);
+export function ProductScreen({ navigation }: RootStackScreenProps<'Product'>) {
+  const {
+    collections,
+    handleGetCollections,
+    handleAddInvoiceToCollection,
+  } = useContext(LNContext);
 
   const handleShowModal = (collection) => {
     navigation.navigate('Modal');
-    handleAddInvoiceToCollection(collection)
+    handleAddInvoiceToCollection(collection);
+  };
+
+  const displayCollections = () => {
+    if (collections.length <= 0) {
+      return <Text>No collections to display</Text>;
+    }
+
+    return (
+      <ProductWrap>
+        {collections.map((collection, index) => (
+          <Product
+            key={collection.collection_id}
+            uri={collection.img_url}
+            description={collection.description}
+            amount={collection.amount}
+            settled={collection.invoice_settled}
+            onPress={() => handleShowModal(collection)}
+          />
+        ))}
+      </ProductWrap>
+    );
   };
 
   return (
@@ -57,29 +52,19 @@ export function ProductScreen({ navigation }) {
       >
         Art Collections
       </Text>
-      <ScrollView>
-        <ProductWrap>
-          {collections.map((collection, index) => (
-            <Product
-              key={collection.collection_id}
-              uri={collection.img_url}
-              description={collection.description}
-              amount={collection.amount}
-              onPress={() => handleShowModal(collection)}
-            />
-          ))}
-        </ProductWrap>
-      </ScrollView>
+      <ScrollView>{displayCollections()}</ScrollView>
     </Container>
   );
 }
 
-const Product = ({ uri, amount, description, onPress }) => {
+const Product = ({ uri, amount, description, onPress, settled }) => {
   return (
     <ProductCard>
-      <ProductCardMask>
-        <PadlockIcon color="#ddd" />
-      </ProductCardMask>
+      {settled ? null : (
+        <ProductCardMask>
+          <PadlockIcon color="#ddd" />
+        </ProductCardMask>
+      )}
       <Image
         source={{
           uri: uri,
@@ -96,9 +81,11 @@ const Product = ({ uri, amount, description, onPress }) => {
           <DescContentTitle>{commaify(amount)} Sats</DescContentTitle>
         </DescContent>
       </DescWrap>
-      <PurchaseButton onPress={onPress}>
-        <PurchaseButtonText>CLAIM</PurchaseButtonText>
-      </PurchaseButton>
+      {settled ? null : (
+        <PurchaseButton onPress={onPress}>
+          <PurchaseButtonText>CLAIM</PurchaseButtonText>
+        </PurchaseButton>
+      )}
     </ProductCard>
   );
 };
