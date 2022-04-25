@@ -13,6 +13,10 @@ const defaultState = {
   address: '',
 };
 
+/**
+ * TO DO: PERSIST COLLECTION
+ */
+
 interface Props {
   children: React.ReactNode;
 }
