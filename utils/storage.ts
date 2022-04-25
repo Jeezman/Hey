@@ -13,7 +13,6 @@ const storeData = async (key: string, value: string) => {
 const getData = async (key: string) => {
   try {
       const jsonValue = await AsyncStorage.getItem(`@${key}`);
-      console.log('getData jsonValue ', jsonValue)
     return jsonValue != null ? JSON.parse(jsonValue) : null;
   } catch (e) {
     console.log('AsyncStorage get error ', e);
