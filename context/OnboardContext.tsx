@@ -1,4 +1,4 @@
-import React, { useState, FC, Fragment, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createAddress } from '../api';
 import { getData, storeData } from '../utils/storage';
 
@@ -26,20 +26,16 @@ export const OnboardContextProvider = ({
 
   useEffect(() => {
     let getStoredData = async () => {
-      console.log('getStoredData called')
       let storedAddress = await getData('address');
       if (storedAddress) setAddress(storedAddress);
-      console.log('getStoredData received ', storedAddress)
     }
     getStoredData();
   }, [])
 
   const handleLogin = async () => {
     const response = await createAddress();
-    console.log('handleLogin response ', response.data)
     setAddress(response?.data?.address);
     alert(response?.data?.address)
-
     storeData('address', response.data.address)
   };
 

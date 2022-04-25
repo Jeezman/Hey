@@ -1,43 +1,32 @@
 import styled from 'styled-components/native';
 import { Text, ScrollView, Image } from 'react-native';
-import {  useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { LNContext } from '../context/LNContext';
-import { PadlockIcon } from '../assets/images/icons';
 import { commaify } from '../utils/formatters';
 import { RootStackScreenProps } from '../types';
 
-export function ProductScreen({ navigation }: RootStackScreenProps<'Product'>) {
+const INVOICE_STATUS = {
+  SETTLED: 1,
+  UNSETTLED: 0
+}
+
+export function MyCollectionScreen({ navigation }: RootStackScreenProps<'Login'>) {
   const {
     collections,
     handleGetCollections,
     handleAddInvoiceToCollection,
   } = useContext(LNContext);
+  console.log('collections is ', collections)
 
   const handleShowModal = (collection) => {
     navigation.navigate('Modal');
     handleAddInvoiceToCollection(collection);
   };
-
-  const displayCollections = () => {
-    if (collections.length <= 0) {
-      return <Text>No collections to display</Text>;
-    }
-
-    return (
-      <ProductWrap>
-        {collections.map((collection, index) => (
-          <Product
-            key={collection.collection_id}
-            uri={collection.img_url}
-            description={collection.description}
-            amount={collection.amount}
-            settled={collection.invoice_settled}
-            onPress={() => handleShowModal(collection)}
-          />
-        ))}
-      </ProductWrap>
-    );
-  };
+    
+    useEffect(() => {
+      handleGetCollections()
+  }, [])
+    
 
   return (
     <Container>
@@ -50,9 +39,22 @@ export function ProductScreen({ navigation }: RootStackScreenProps<'Product'>) {
           opacity: 0.9,
         }}
       >
-        Art Collections
+        My Collections
       </Text>
-      <ScrollView>{displayCollections()}</ScrollView>
+      <ScrollView>
+        <ProductWrap>
+          {collections.filter(collection => collection.invoice_settled === INVOICE_STATUS.SETTLED).map((collection, index) => (
+            <Product
+              key={collection.collection_id}
+              uri={collection.img_url}
+              description={collection.description}
+              amount={collection.amount}
+              settled={collection.invoice_settled}
+              onPress={() => handleShowModal(collection)}
+            />
+          ))}
+        </ProductWrap>
+      </ScrollView>
     </Container>
   );
 }
@@ -60,11 +62,6 @@ export function ProductScreen({ navigation }: RootStackScreenProps<'Product'>) {
 const Product = ({ uri, amount, description, onPress, settled }) => {
   return (
     <ProductCard>
-      {settled ? null : (
-        <ProductCardMask>
-          <PadlockIcon color="#ddd" />
-        </ProductCardMask>
-      )}
       <Image
         source={{
           uri: uri,
