@@ -17,81 +17,46 @@ export const createInvoice = async (
 ) => {
   try {
     const requestBody: InvoiceRequest = {
-      memo: req.body.description,
+      memo: req.body.memo,
       private: JSON.parse(req.body.private),
       expiry: req.body.expiry,
     };
- 
+
     if (req.body.amount > 0 && req.body.amount < 1) {
       requestBody.value_msat = req.body.amount * 1000;
     } else {
       requestBody.value = req.body.amount;
     }
+    const rpc = await LNDRPC();
 
-/**
-     * REST IMPLEMENTATION
-    let options = {
-      url: `${config.LN_BASE_URL}/invoices`,
-      // Work-around for self-signed certificates.
-      rejectUnauthorized: false,
-      json: true,
-      headers: {
-        'Grpc-Metadata-macaroon': macaroon,
-      },
-      form: JSON.stringify(requestBody),
-    };
-
-    let _data;
-    request.post(options, function (error, response, body) {
-      _data = body;
-      req.invoice = _data;
-      next();
-    });
-    */
-   const rpc = await LNDRPC();
-
-   const response = await rpc.addInvoice(requestBody);
-
-  //  console.log('creating invoice rpc ', {response})
+    const response = await rpc.addInvoice(requestBody);
     req.invoice = response;
     if (req.params.collection_id) {
       req.invoice.collection_id = req.params.collection_id;
     }
-   next();
-
+    next();
   } catch (error) {
     console.log('createInvoice error ', error);
   }
 };
 
-export const getInvoice = async (req: Request, res: Response, next: NextFunction) => {
+export const getInvoice = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let hash = Buffer.from(req.params.rHash, 'base64').toString('hex');
 
-  console.log('getInvoice hash ', {param: req.params.rHash, hash})
-
   const rpc = await LNDRPC();
-  const response =  await rpc.lookupInvoice({
+  const response = await rpc.lookupInvoice({
     rHashStr: hash,
-    rHash: req.params.rHash
-  })
+    rHash: req.params.rHash,
+  });
 
-  let rhash = Buffer.from(response.rHash).toString('base64')
-  let preImg = Buffer.from(response.rPreimage).toString('base64')
+  let rhash = Buffer.from(response.rHash).toString('base64');
+  let preImg = Buffer.from(response.rPreimage).toString('base64');
 
   response.rHash = rhash;
-  response.rPreimage = preImg
-  res.status(200).json(response)
-
-  console.log('get invoice response settled is ', response.settled)
-
-  const call = await rpc.subscribeInvoices({
-    addIndex: '91'
-  })
-
-  call.on('data', function(response) {
-    console.log('received data response ', response)
-  })
-  call.on('status', function(status) {
-    console.log('status of stream ', status)
-  })
+  response.rPreimage = preImg;
+  res.status(200).json(response);
 };
