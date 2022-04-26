@@ -15,8 +15,6 @@ import {
 import dotenv from 'dotenv';
 import http from 'http'
 
-
-
 dotenv.config();
 
 export const config = {
@@ -34,21 +32,14 @@ app.use(bodyParser.json({ limit: '25mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(loggerMiddleware);
 
-
-
 let emitSocketEvent;
 
 io.on('connection', (socket) => {
   console.log('a user connected')
-  socket.emit('hello', 'fuck you from index');
-
   emitSocketEvent = socket;
 })
 
-
 export { emitSocketEvent };
-
-  
 
 export interface CustomRequest extends Request {
   ln_address?: string;
@@ -79,7 +70,6 @@ app.get('/', async (req: Request, res: Response) => {
     macaroon,
   });
 });
-
 
 const generateLNAddress = async (
   req: CustomRequest,
@@ -149,9 +139,6 @@ app.put(
   createInvoice,
   addInvoiceToCollection
 );
-
-
-
 
 const server = _http.listen(config.PORT, () => {
   console.log('App listening on port ' + config.PORT);
