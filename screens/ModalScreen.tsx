@@ -10,7 +10,6 @@ import * as Clipboard from 'expo-clipboard';
 import { useFocusEffect } from '@react-navigation/native';
 import { RootStackScreenProps } from '../types';
 
-
 export default function ModalScreen({ navigation }: RootStackScreenProps<'Modal'>) {
   const {
     paymentRequest,
@@ -159,20 +158,3 @@ const QRPayReqText = styled.Text`
   line-height: 20px;
   margin-top: 10px;
 `;
-
-/* const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-}); */
