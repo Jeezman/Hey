@@ -1,6 +1,38 @@
 # Hey
 Paywalled Lightning Network mobile application
 
+I wrote about builidng this application on [Medium](https://medium.com/@tobiadeyemi/paywall-application-built-with-react-native-and-lightning-ccfe72db12e0)
+
+## Features/Components
+- Uses React Native 0.64.3
+- Lightning Network Daemon (LND)
+- Websockets
+- Typescript
+- MySQL
+
+## Installation
+- Fork (optional) and clone repo
+
+      git clone https://github.com/jeezman/hey.git && cd hey
+        
+- Once you have downloaded or cloned this repository, run `npm install` inside the root directory and also in the server directory.
+
+      npm install
+
+      cd server
+
+      npm install
+
+- To run client application, inside the root directory run the following commands
+
+        npm run start
+
+- To run client application, inside the root server directory run the following commands
+
+        npm run setupdb
+        
+        npm run start
+
 # Screenshots
 
 ## Homepage
@@ -17,3 +49,15 @@ Paywalled Lightning Network mobile application
 
 ## Purchased collections
 <img width="418" alt="Screen Shot 2022-04-25 at 5 56 43 PM" src="https://user-images.githubusercontent.com/8108245/165137145-460e190a-8708-4a41-a30c-a4c28599bb9f.png">
+
+## Feedback
+
+    If you have encounter a bug, or have a useful feature,
+    Please create an issue, or make a pull request!
+
+> Follow me on [Twitter](https://twitter.com/_tobillionaire) to keep up with my future projects.
+
+## License
+
+The code within this project is released under the [MIT
+License](LICENSE.txt). 
